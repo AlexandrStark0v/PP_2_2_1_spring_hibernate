@@ -9,6 +9,6 @@ public interface UserService {
     void add(User user);
     User getUserByCar(String model, int series);
 
-    @Transactional(readOnly = true)
+
     List<User> listUsers();
 }

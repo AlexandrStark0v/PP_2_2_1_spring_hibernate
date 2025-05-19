@@ -23,24 +23,20 @@ public class UserDaoImp implements UserDao {
    @SuppressWarnings("unchecked")
    @Override
    public List<User> listUsers() {
-      TypedQuery<User> query=sessionFactory.getCurrentSession().createQuery("from User");
-      return query.getResultList();
+      Session session = sessionFactory.getCurrentSession();
+      return session.createQuery(
+              "SELECT u FROM User u JOIN FETCH u.car", User.class
+      ).getResultList();
    }
 
    @Override
    public User getUserByCar(String model, int series) {
-      try { return (User) sessionFactory.getCurrentSession()
-                 .createQuery("FROM User u WHERE u.car.model = :model AND u.car.series = :series")
-                 .setParameter("model", model)
-                 .setParameter("series", series)
-                 .uniqueResult();
-      } catch (org.hibernate.NonUniqueResultException e) {
-         System.out.println("Найдено больше одного пользователя с данной машиной");
-         return null;
-      } catch (Exception e) {
-         System.out.println("Ошибка при выполнении запроса: " + e.getMessage());
-         return null;
-      }
+      Session session = sessionFactory.getCurrentSession();
+      return session.createQuery(
+                      "SELECT u FROM User u JOIN FETCH u.car WHERE u.car.model = :model AND u.car.series = :series", User.class)
+              .setParameter("model", model)
+              .setParameter("series", series)
+              .getSingleResult();
    }
 
 }
